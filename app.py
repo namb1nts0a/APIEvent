@@ -25,10 +25,13 @@ def create_event(solution, model, action):
     db = next(get_db()) #obtenir une session
     try:
         #recevoir les donnees json
-        event_data = request.get_json()
+        try:
+            event_data = request.get_json()
+        except Exception:
+            return jsonify({"message": "Invalid JSON"}), 400
 
         if not event_data:
-            return jsonify({"message":"Invalid JSON"}), 400
+            return jsonify({"message": "No data provided"}), 400
         
         #generer un uid et un horodatage
         event_uid = str(uuid.uuid4())
@@ -38,7 +41,7 @@ def create_event(solution, model, action):
         new_event = Event(
             event_uid = event_uid,
             event_timestamp = event_timestamp,
-            event_data = str(event_data)
+            event_data = json.dumps(event_data)
         )
 
         #enregistrement dans la base de donnee
