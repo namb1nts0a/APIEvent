@@ -5,6 +5,8 @@ from sqlalchemy.orm import Session
 from db import engine, get_db
 from models import Event
 from db import Base
+from rabbitmq import publish_to_rabbitmq
+import json
 
 
 #creation du tables dans le db au demarrage
@@ -50,7 +52,12 @@ def create_event(solution, model, action):
             "event_data" : event_data
         }
 
-        return jsonify(response_message), 200
+        queue_name = f"{solution}/{model}/{action}"
+
+        #publier le message dans rabbitmq
+        publish_to_rabbitmq(queue_name, json.dumps(response_message))
+
+        return jsonify({"message" : f"Event published to queue {queue_name}", "status" : "success"}), 200
     except Exception as e:
         db.rollback() # s'il y a erreur on annule la transaction
         return jsonify({"message" : str(e)}), 500
