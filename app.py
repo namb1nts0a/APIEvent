@@ -58,7 +58,14 @@ def create_event(solution, model, action):
         queue_name = f"{solution}/{model}/{action}"
 
         #publier le message dans rabbitmq
-        publish_to_rabbitmq(queue_name, json.dumps(response_message))
+        
+
+        #strategie de retry a chaque echec de publication
+        try:
+            publish_to_rabbitmq(queue_name, json.dumps(response_message))
+        except Exception as e:
+            print(f"Echec lors de la publication dans rabbitmq : {str(e)}")
+            return jsonify({"message": "Echec lors de la publication dans RabbitMQ"}), 500
 
         return jsonify({"message" : f"Event published to queue {queue_name}", "status" : "success"}), 200
     except Exception as e:
