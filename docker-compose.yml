@@ -1,0 +1,24 @@
+version: '3'
+
+services:
+  rabbitmq:
+    image: "rabbitmq:3-management" #utiliser l'image rabbitmq avec l'interface de management
+    container_name: "rabbitmq"
+    ports:
+      -"5672:5672" #port pour l'echange de message
+      -"15672:15672" #port pour l'interface de management
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+
+  api:
+    build: .
+    container_name: "api-service"
+    ports:
+      - "5000:5000"  # Mapper le port de l'API sur l'hôte
+    environment:
+      - RABBITMQ_HOST=rabbitmq  # Lien vers le service RabbitMQ
+    depends_on:
+      - rabbitmq
+    volumes:
+      - .:/app  # Montre le répertoire local dans le conteneur
