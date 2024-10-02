@@ -5,8 +5,8 @@ services:
     image: "rabbitmq:3-management" #utiliser l'image rabbitmq avec l'interface de management
     container_name: "rabbitmq"
     ports:
-      -"5672:5672" #port pour l'echange de message
-      -"15672:15672" #port pour l'interface de management
+      - "5672:5672" #port pour l'echange de message
+      - "15672:15672" #port pour l'interface de management
     environment:
       RABBITMQ_DEFAULT_USER: guest
       RABBITMQ_DEFAULT_PASS: guest
